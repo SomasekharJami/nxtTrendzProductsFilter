@@ -5,6 +5,7 @@ import Cookies from 'js-cookie'
 import FiltersGroup from '../FiltersGroup'
 import ProductCard from '../ProductCard'
 import ProductsHeader from '../ProductsHeader'
+import Pagination from '../Pagination'
 
 import './index.css'
 
@@ -80,6 +81,9 @@ class AllProductsSection extends Component {
     activeCategoryId: '',
     searchInput: '',
     activeRatingId: '',
+    noOfPages: [],
+    pageList: [],
+    activePageId: 1,
   }
 
   componentDidMount() {
@@ -115,9 +119,18 @@ class AllProductsSection extends Component {
         imageUrl: product.image_url,
         rating: product.rating,
       }))
+      const pageNums = Math.ceil(updatedData.length / 10)
+      const pageArr = []
+      for (let i = 1; i < pageNums + 1; ) {
+        pageArr.push(i)
+        i += 1
+      }
+      const slicingPages = updatedData.slice(0, 10)
       this.setState({
         productsList: updatedData,
         apiStatus: apiStatusConstants.success,
+        noOfPages: pageArr,
+        pageList: slicingPages,
       })
     } else {
       this.setState({
@@ -148,12 +161,26 @@ class AllProductsSection extends Component {
     </div>
   )
 
+  gettingPageSlice = id => {
+    const {productsList} = this.state
+    const lastId = id * 10
+    const prevId = lastId - 10
+    const sliced = productsList.slice(prevId, lastId)
+    this.setState({pageList: sliced, activePageId: id})
+  }
+
   changeSortby = activeOptionId => {
     this.setState({activeOptionId}, this.getProducts)
   }
 
   renderProductsListView = () => {
-    const {productsList, activeOptionId} = this.state
+    const {
+      productsList,
+      activeOptionId,
+      pageList,
+      noOfPages,
+      activePageId,
+    } = this.state
     const shouldShowProductsList = productsList.length > 0
 
     return shouldShowProductsList ? (
@@ -164,8 +191,18 @@ class AllProductsSection extends Component {
           changeSortby={this.changeSortby}
         />
         <ul className="products-list">
-          {productsList.map(product => (
+          {pageList.map(product => (
             <ProductCard productData={product} key={product.id} />
+          ))}
+        </ul>
+        <ul className="pagiCon">
+          {noOfPages.map(eachPage => (
+            <Pagination
+              key={eachPage}
+              details={eachPage}
+              gettingPageSlice={this.gettingPageSlice}
+              activePageId={activePageId}
+            />
           ))}
         </ul>
       </div>

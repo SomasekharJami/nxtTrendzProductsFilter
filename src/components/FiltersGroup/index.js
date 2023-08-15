@@ -3,69 +3,67 @@ import {BsSearch} from 'react-icons/bs'
 import './index.css'
 
 const FiltersGroup = props => {
-  const renderRatingsFiltersList = () => {
-    const {ratingsList} = props
-
-    return ratingsList.map(rating => {
-      const {changeRating, activeRatingId} = props
-      const onClickRatingItem = () => changeRating(rating.ratingId)
-
-      const ratingClassName =
-        activeRatingId === rating.ratingId ? `and-up active-rating` : `and-up`
-
-      return (
-        <li
-          className="rating-item"
-          key={rating.ratingId}
-          onClick={onClickRatingItem}
-        >
-          <img
-            src={rating.imageUrl}
-            alt={`rating ${rating.ratingId}`}
-            className="rating-img"
-          />
-          <p className={ratingClassName}>& up</p>
-        </li>
-      )
-    })
+  const renderingCat = () => {
+    const {categoryOptions, changeCategory, activeCategoryId} = props
+    return (
+      <div>
+        <h1 className="category-heading">Category</h1>
+        <ul className="categories-list">
+          {categoryOptions.map(eachCat => {
+            const isActive = eachCat.categoryId === activeCategoryId
+            const catClass = isActive
+              ? `category-name active-category-name`
+              : `category-name`
+            const onChangeCat = () => changeCategory(eachCat.categoryId)
+            return (
+              <li
+                className="category-item"
+                key={eachCat.categoryId}
+                onClick={onChangeCat}
+              >
+                <p className={catClass}>{eachCat.name}</p>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    )
   }
 
-  const renderRatingsFilters = () => (
-    <div>
-      <h1 className="rating-heading">Rating</h1>
-      <ul className="ratings-list">{renderRatingsFiltersList()}</ul>
-    </div>
-  )
-
-  const renderCategoriesList = () => {
-    const {categoryOptions} = props
-
-    return categoryOptions.map(category => {
-      const {changeCategory, activeCategoryId} = props
-      const onClickCategoryItem = () => changeCategory(category.categoryId)
-      const isActive = category.categoryId === activeCategoryId
-      const categoryClassName = isActive
-        ? `category-name active-category-name`
-        : `category-name`
-
-      return (
-        <li
-          className="category-item"
-          key={category.categoryId}
-          onClick={onClickCategoryItem}
-        >
-          <p className={categoryClassName}>{category.name}</p>
-        </li>
-      )
-    })
+  const renderingRat = () => {
+    const {ratingsList, changeRating, activeRatingId} = props
+    return (
+      <div>
+        <h1 className="rating-heading">Rating</h1>
+        <ul className="ratings-list">
+          {ratingsList.map(eachRat => {
+            const isRatAct = eachRat.ratingId === activeRatingId
+            const ratClass = isRatAct ? `and-up active-rating` : `and-up`
+            const onChangeRat = () => changeRating(eachRat.ratingId)
+            return (
+              <li
+                className="rating-item"
+                key={eachRat.ratingId}
+                onClick={onChangeRat}
+              >
+                <img
+                  src={eachRat.imageUrl}
+                  alt={`rating ${eachRat.ratingId}`}
+                  className="rating-img"
+                />
+                <p className={ratClass}>& up</p>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    )
   }
 
-  const renderProductCategories = () => (
-    <>
-      <h1 className="category-heading">Category</h1>
-      <ul className="categories-list">{renderCategoriesList()}</ul>
-    </>
-  )
+  const onChangeSearchInput = event => {
+    const {changeSearchInput} = props
+    changeSearchInput(event.target.value)
+  }
 
   const onEnterSearchInput = event => {
     const {enterSearchInput} = props
@@ -74,14 +72,8 @@ const FiltersGroup = props => {
     }
   }
 
-  const onChangeSearchInput = event => {
-    const {changeSearchInput} = props
-    changeSearchInput(event.target.value)
-  }
-
-  const renderSearchInput = () => {
+  const renderSearch = () => {
     const {searchInput} = props
-
     return (
       <div className="search-input-container">
         <input
@@ -96,14 +88,12 @@ const FiltersGroup = props => {
       </div>
     )
   }
-
   const {clearFilters} = props
-
   return (
     <div className="filters-group-container">
-      {renderSearchInput()}
-      {renderProductCategories()}
-      {renderRatingsFilters()}
+      {renderSearch()}
+      {renderingCat()}
+      {renderingRat()}
       <button
         type="button"
         className="clear-filters-btn"
